@@ -1,0 +1,7 @@
+assemblyai
+langchain-google-genai
+langgraph
+pydantic
+plotly
+websockets
+python-dotenv
