@@ -14,9 +14,9 @@
 
 Traditional AI meeting tools either flood leadership with unfocused transcripts hours after a call ends or require artificial wake-words that disrupt natural conversation. 
 
-**CoChair.ai** acts as an ambient analytical partner in executive discussions. It streams live meeting audio, separates casual chatter from analytical inquiries in under 180ms, and dispatches queries directly against your business database without manual intervention.
+**CoChair.ai** acts as an ambient analytical partner in executive discussions. It streams live meeting audio, separates casual chatter from analytical inquiries, and dispatches queries directly against your business database without manual intervention.
 
-Beyond descriptive totals, CoChair features an inferential decision engine that calculates two-sample t-tests and variance models on the fly to confirm whether observed differences represent true operational variance or random noise.
+Beyond descriptive totals, CoChair features an inferential decision engine that calculates two-sample t-tests , correlation , anova one way test and variance models on the fly to confirm whether observed differences represent true operational variance or random noise.
 
 ---
 
