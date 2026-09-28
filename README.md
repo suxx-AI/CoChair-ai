@@ -1,6 +1,5 @@
-
 <div align="center">
-  <img src="assets/logo.png" alt="CoChair.ai Logo" width="140" />
+  <img src="CoChair.ai%20Logo.jpeg" alt="CoChair.ai Logo" width="140" />
   <h1>CoChair.ai</h1>
   <p><b>Executive Intelligence HUD</b></p>
 </div>
