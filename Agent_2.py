@@ -21,11 +21,21 @@ import plotly.graph_objects as go
 from event_bridge import broadcast_event
 from langchain_core.runnables import RunnableConfig
 
+from langchain_openai import ChatOpenAI
 
-
+# Fast System 1 Gatekeeper
 
 
 load_dotenv()
+
+llm = ChatOpenAI(
+    base_url=os.environ.get("FIREWORKS_BASE_URL", "https://api.fireworks.ai/inference/v1"),
+    api_key=os.environ["FIREWORKS_API_KEY"],
+    model_name="accounts/fireworks/models/deepseek-v4p1-flash", 
+    temperature=0.1
+
+)
+
 
 memory = []
 
@@ -55,7 +65,7 @@ def get_database_schema():
 @tool
 def execute_sql(query: str):
     """Execute a read-only SQL query and return the result."""
-    print(f"[Tool] execute_sql called: {query}")
+    
     broadcast_event("tool_event", {
         "tool": "execute_sql",
         "input": {"query": query},
@@ -82,7 +92,7 @@ def execute_sql(query: str):
 @tool
 def correlation(x_values: list[float], y_values: list[float]):
     """Calculates correlation between two numeric datasets values"""
-    print(f"[Tool] correlation called with {len(x_values)} points")
+    
     broadcast_event("tool_event", {
         "tool": "correlation",
         "input": {"x_count": len(x_values), "y_count": len(y_values)},
@@ -107,7 +117,7 @@ def correlation(x_values: list[float], y_values: list[float]):
 @tool
 def t_test(group_a: list[float], group_b: list[float]):
     """Test whether two independent numeric groups have significantly different means. Returns the t-statistic and p-value."""
-    print("[Tool] t_test called")
+    
     broadcast_event("tool_event", {
         "tool": "t_test",
         "input": {"group_a_size": len(group_a), "group_b_size": len(group_b)},
@@ -136,7 +146,7 @@ def t_test(group_a: list[float], group_b: list[float]):
 @tool
 def anova(group1: list[float], group2: list[float], group3: list[float]):
     """Compare the means of three numeric groups using one-way ANOVA."""
-    print("[Tool] anova called")
+    
     broadcast_event("tool_event", {
         "tool": "anova",
         "input": {"group1_size": len(group1), "group2_size": len(group2), "group3_size": len(group3)},
@@ -168,7 +178,7 @@ def create_plot(
     y_label: str = "Y"
 ):
     """Create a chart and open it in the browser."""
-    print("PLOT TOOL CALLED")
+    
     print("TYPE:", chart_type)
     print("X:", x_values)
     print("Y:", y_values)
@@ -231,7 +241,7 @@ def create_plot(
 
 tools = [execute_sql, correlation, t_test, anova, create_plot]
 
-llm = ChatGoogleGenerativeAI(
+temp_llm = ChatGoogleGenerativeAI(
     model="gemini-3.1-flash-lite",
     google_api_key=os.environ.get("GEMINI_API_KEY"),
 )
@@ -240,7 +250,7 @@ llm_with_tools = llm.bind_tools(tools)
 
 
 def agent_node(state: MessagesState, config= None):
-    print("am now at agent")
+    
 
     # 1. Read mode passed during invoke (defaults to "normal")
     mode = (config or {}).get("configurable", {}).get("mode", "normal")
@@ -248,7 +258,7 @@ def agent_node(state: MessagesState, config= None):
 
     # 2. Select system prompt based on mode
     if mode == "meeting":
-        # Ultra-concise prompt: cuts tokens by >60%, prioritizes plotting, no TTS fluff
+        
         prompt_content = f"""
             You are an Ambient Meeting Intelligence HUD.
             Your goal is to silently serve analytics and charts to the screen.
@@ -264,7 +274,7 @@ def agent_node(state: MessagesState, config= None):
             Current memory: {memory}
             """
     else:
-        # Your exact original prompt for normal voice assistant mode
+        
         prompt_content = f"""
             You are a database assistant.
 
@@ -295,7 +305,7 @@ tool_node = ToolNode(tools)
 
 
 def should_continue(state: MessagesState):
-    print("am now at continue")
+    
     last_message = state["messages"][-1]
 
     if last_message.tool_calls:
@@ -373,8 +383,7 @@ def run_agent(user_text: str,mode: str = "normal"):
     }
 
     memory.append(memory_chunck)
-    print(final_message.content)
-    print(memory_chunck)
+
 
     broadcast_event("agent_reply", {"text": reply_text})
 

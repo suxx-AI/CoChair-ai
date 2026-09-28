@@ -24,6 +24,7 @@ export function App() {
   const [voiceStatus, setVoiceStatus] = useState<VoiceStatus | null>(null);
   const [mode, setMode] = useState<AppMode>('normal');
   const [gateEval, setGateEval] = useState<GateEvalEvent | null>(null);
+  const [latestInsight, setLatestInsight] = useState<string | null>(null);
   const [turns, setTurns] = useState<ConversationTurn[]>([]);
   const [currentChart, setCurrentChart] = useState<ChartEvent['chart'] | null>(null);
   const [isSchemaModalOpen, setIsSchemaModalOpen] = useState(false);
@@ -102,10 +103,30 @@ export function App() {
               case 'gate_eval':
                 console.log('[WS] Received gate_eval event:', data);
                 if (data) {
-                  setGateEval({
+                  const evalData: GateEvalEvent = {
                     trigger: Boolean(data.trigger),
                     confidence: Number(data.confidence ?? 0),
                     latency_ms: Number(data.latency_ms ?? 0),
+                  };
+                  setGateEval(evalData);
+
+                  // Classify the most recent user turn based on Micro-Gatekeeper decision
+                  setTurns((prev) => {
+                    if (prev.length === 0) return prev;
+                    const lastIdx = prev.length - 1;
+                    const lastTurn = prev[lastIdx];
+                    if (lastTurn.sender === 'user') {
+                      const isSuppressed = !evalData.trigger || evalData.confidence < 0.75;
+                      const category = evalData.trigger && evalData.confidence >= 0.75 ? 'analytical' : 'banter';
+                      const updated: ConversationTurn = {
+                        ...lastTurn,
+                        gateEval: evalData,
+                        isSuppressed,
+                        category,
+                      };
+                      return [...prev.slice(0, lastIdx), updated];
+                    }
+                    return prev;
                   });
                 }
                 break;
@@ -150,6 +171,7 @@ export function App() {
                         text: text,
                         isStreaming: !data.is_final,
                         timestamp: now,
+                        category: data.is_final ? undefined : 'standard',
                       },
                     ];
                   }
@@ -160,6 +182,7 @@ export function App() {
               case 'agent_reply': {
                 const replyText = data?.text?.trim();
                 if (!replyText) break;
+                setLatestInsight(replyText);
                 const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                 setTurns((prev) => {
@@ -333,17 +356,20 @@ export function App() {
           x: ['Laptop', 'Headphones', 'Keyboard', 'Desk', 'Chair'],
           y: [950, 120, 80, 300, 180],
           marker: {
-            color: ['#38bdf8', '#818cf8', '#a855f7', '#34d399', '#f43f5e'],
+            color: ['#2b66ff', '#3b82f6', '#60a5fa', '#10b981', '#a855f7'],
           },
         },
       ],
       layout: {
-        title: { text: 'Sample Product Price Catalog ($)' },
-        xaxis: { title: 'Product Name' },
-        yaxis: { title: 'Price (USD)' },
+        title: { text: 'Product Capital Allocation & Price Catalog ($)' },
+        xaxis: { title: 'Product Category' },
+        yaxis: { title: 'Unit Price (USD)' },
       },
     };
     setCurrentChart(samplePayload);
+    setLatestInsight(
+      'Executive Takeaway: Enterprise capital expenditure concentrates primarily in Laptops ($950/unit), while high-turnover peripherals average $126 with 42% higher recurring replenishment frequency across regional branches.'
+    );
   };
 
   const handleClearTurns = () => {
@@ -351,8 +377,8 @@ export function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-dark-950 text-slate-100 overflow-hidden select-none">
-      {/* Top Header */}
+    <div className="flex flex-col h-screen w-screen bg-dark-950 text-slate-100 overflow-hidden select-none font-sans">
+      {/* Top Header Navigation */}
       <Header
         wsConnected={wsConnected}
         voiceStatus={voiceStatus}
@@ -363,9 +389,9 @@ export function App() {
         onOpenSchemaModal={() => setIsSchemaModalOpen(true)}
       />
 
-      {/* Main Content Viewports */}
-      <main className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0 overflow-hidden">
-        {/* Left / Center Panel: Live Transcript & Voice Waveform */}
+      {/* Main Executive Content Viewports */}
+      <main className="flex-1 flex flex-col md:flex-row gap-3 p-3 min-h-0 overflow-hidden bg-dark-950">
+        {/* Left / Center Panel: Ambient Conversation Feed & Voice Waveform */}
         <section className="flex-1 h-full min-h-0 md:max-w-[48%]">
           <TranscriptPanel
             turns={turns}
@@ -377,16 +403,19 @@ export function App() {
           />
         </section>
 
-        {/* Right Panel: Interactive Plotly Chart Viewport */}
+        {/* Right Panel: Primary Analytics Viewport & Executive Insight */}
         <section className="flex-1 h-full min-h-0 md:max-w-[52%]">
           <ChartView
             chart={currentChart}
+            executiveInsight={latestInsight}
+            agentState={agentState}
             onLoadSampleChart={handleLoadSampleChart}
+            onSelectPrompt={handleSendMessage}
           />
         </section>
       </main>
 
-      {/* Bottom Status Bar */}
+      {/* Bottom Status Bar Telemetry */}
       <StatusBar
         wsConnected={wsConnected}
         agentState={agentState}

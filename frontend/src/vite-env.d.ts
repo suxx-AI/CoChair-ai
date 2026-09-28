@@ -42,6 +42,15 @@ declare module 'lucide-react' {
   export const Zap: Icon;
   export const Layers: Icon;
   export const History: Icon;
+  export const ShieldCheck: Icon;
+  export const ShieldAlert: Icon;
+  export const VolumeX: Icon;
+  export const TrendingUp: Icon;
+  export const Check: Icon;
+  export const Search: Icon;
+  export const SlidersHorizontal: Icon;
+  export const Eye: Icon;
+  export const EyeOff: Icon;
   const icons: Record<string, Icon>;
   export default icons;
 }

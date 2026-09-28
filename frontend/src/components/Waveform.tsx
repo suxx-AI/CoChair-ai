@@ -12,20 +12,20 @@ export const Waveform: React.FC<WaveformProps> = ({ state, isStreamingAudio }) =
   const getColor = () => {
     switch (state) {
       case 'Listening':
-        return 'bg-emerald-400 shadow-emerald-500/50';
+        return 'bg-emerald-400';
       case 'Thinking':
-        return 'bg-amber-400 shadow-amber-500/50';
+        return 'bg-cochair-blue-light';
       case 'Speaking':
-        return 'bg-purple-400 shadow-purple-500/50';
+        return 'bg-cochair-blue-bright';
       default:
-        return 'bg-slate-600 shadow-slate-600/30';
+        return 'bg-slate-700';
     }
   };
 
   const isActive = isStreamingAudio || state !== 'Idle';
 
   return (
-    <div className="flex items-center gap-1 h-8 px-3 py-1 rounded-full bg-dark-850/80 border border-dark-700/80 shadow-inner">
+    <div className="flex items-center gap-0.5 h-6 px-2 py-0.5 rounded bg-dark-850 border border-dark-800">
       {bars.map((height, i) => {
         // Calculate animation delay for wave motion
         const delay = (i * 0.08) % 1.2;
@@ -36,7 +36,7 @@ export const Waveform: React.FC<WaveformProps> = ({ state, isStreamingAudio }) =
         return (
           <div
             key={i}
-            className={`w-1 rounded-full transition-all duration-300 shadow-sm ${getColor()}`}
+            className={`w-0.5 rounded-none transition-height duration-150 ${getColor()}`}
             style={{
               height: `${currentHeight}%`,
               animation: isActive ? `wave 1.2s ease-in-out infinite` : 'none',

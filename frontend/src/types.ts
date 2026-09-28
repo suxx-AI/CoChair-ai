@@ -50,6 +50,9 @@ export interface ConversationTurn {
   toolData?: ToolEvent;
   isStreaming?: boolean;
   timestamp: string;
+  category?: 'analytical' | 'banter' | 'standard';
+  isSuppressed?: boolean;
+  gateEval?: GateEvalEvent;
 }
 
 export interface VoiceStatus {

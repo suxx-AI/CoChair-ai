@@ -1,5 +1,6 @@
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
@@ -19,15 +20,23 @@ class FastGate(BaseModel):
   confidence: float = Field(
       ge=0.0,
       le=1.0,
-      description="Confidence score between 0.0 and 1.0 that a visual chart or data check is needed.",
+      description="Score between 0.0 and 1.0 representing the likelihood that a data visualization is urgently required. Return < 0.15 for banter or chit-chat.",
   )
 
 
-model = ChatGoogleGenerativeAI(
+temp = ChatGoogleGenerativeAI(
     model = "gemini-3.1-flash-lite",
     temperature=0.0,
     max_output_tokens=100,
     api_key=os.getenv("GEMINI_API_KEY")
+)
+
+model = ChatOpenAI(
+    base_url=os.environ.get("FIREWORKS_BASE_URL", "https://api.fireworks.ai/inference/v1"),
+    api_key=os.environ["FIREWORKS_API_KEY"],
+    model_name="accounts/fireworks/models/deepseek-v4p1-flash", 
+    temperature=0.1
+
 )
 
 
