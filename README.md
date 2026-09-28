@@ -1,7 +1,6 @@
 <div align="center">
   <img src="CoChair.ai%20Logo.jpeg" alt="CoChair.ai Logo" width="280" />
   <h1>CoChair.ai</h1>
-  <p><b>Executive Intelligence HUD</b></p>
   <p><i>Zero-wake-word ambient listener and inferential decision engine</i></p>
 </div>
 
