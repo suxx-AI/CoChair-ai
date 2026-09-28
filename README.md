@@ -1,9 +1,7 @@
 <div align="center">
-  <img src="CoChair.ai%20Logo.jpeg" alt="CoChair.ai Logo" width="140" />
-  <h1>CoChair.ai</h1>
-  <p><b>Executive Intelligence HUD</b></p>
+  <img src="CoChair.ai%20Logo.jpeg" alt="CoChair.ai" width="380" />
+  <p><b>Zero-wake-word ambient listener and inferential decision engine</b></p>
 </div>
-
 # CoChair.ai — Executive Intelligence HUD
 
 > An autonomous, zero-wake-word meeting intelligence HUD that listens silently to executive conversations, filters banter, and executes live SQL charts, parametric hypothesis tests, and predictive feasibility audits directly against relational data[cite: 3].
